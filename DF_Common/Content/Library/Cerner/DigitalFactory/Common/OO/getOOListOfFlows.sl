@@ -1,0 +1,28 @@
+########################################################################################################################
+#!!
+#! @input oo_flow_status: default is COMPLETED, provide the exact Flow Status to retrieve the last run time
+#! @input from_time: Provide time in Unix datestamp
+#!!#
+########################################################################################################################
+namespace: Cerner.DigitalFactory.Common.OO
+operation:
+  name: getOOListOfFlows
+  inputs:
+    - central_url: "${get_sp('io.cloudslang.microfocus.oo.central_url')}"
+    - oo_username: "${get_sp('io.cloudslang.microfocus.oo.oo_username')}"
+    - oo_password: "${get_sp('io.cloudslang.microfocus.oo.oo_password')}"
+    - oo_flow_status: COMPLETED
+    - from_time
+  python_action:
+    use_jython: false
+    script: "###############################################################\r\n#   Opertion Name: getOOListOfFlows\r\n#   OO operation for getting the last successful run time based on Flow Run Name\r\n#   Author: Rakesh Sharma (rakesh.sharma@cerner.com)\r\n#   Inputs:\r\n#       -   central_url\r\n#       -   oo_username\r\n#       -   oo_password\r\n#       -   oo_run_name\r\n#       -   oo_flow_status\r\n#       -   from_time\r\n#\r\n#   Outputs:\r\n#       -   result\r\n#       -   message\r\n#       -   errortype\r\n#       -   errorMessage\r\n#       -   errorProvider\r\n#       -   last_run_time\r\n###############################################################\r\nimport sys, os\r\nimport subprocess\r\n\r\n\r\n# function do download external modules to python \"on-the-fly\"\r\ndef install(param):\r\n    message = \"\"\r\n    result = \"\"\r\n    errorType = \"\"\r\n    errorMessage = \"\"\r\n    try:\r\n\r\n        pathname = os.path.dirname(sys.argv[0])\r\n        message = os.path.abspath(pathname)\r\n        message = subprocess.call([sys.executable, \"-m\", \"pip\", \"list\"])\r\n        message = subprocess.run([sys.executable, \"-m\", \"pip\", \"install\", param], capture_output=True)\r\n        result = \"True\"\r\n    except Exception as e:\r\n        message = e\r\n        result = \"False\"\r\n        errorType = \"e10000\"\r\n        errorMessage = message\r\n    return {\"result\": result, \"message\": message, \"errorType\": errorType, \"errorMessage\": errorMessage}\r\n\r\n\r\n# requirement external modules\r\ninstall(\"requests\")\r\n\r\n\r\ndef execute(central_url, oo_username, oo_password, oo_flow_status, from_time):\r\n    message = \"\"\r\n    result = \"\"\r\n    errorType = \"\"\r\n    errorMessage = \"\"\r\n    errorProvider = \"\"\r\n    executions_list = ''\r\n\r\n    try:\r\n        import requests\r\n        import json\r\n\r\n        basicAuthCredentials = (oo_username, oo_password)\r\n        authHeaders = {\"TENANTID\": \"keep-alive\", \"Content-Type\": \"application/json\"}\r\n\r\n        getURL = central_url + \"/rest/v2/executions?startedAfter=\" + from_time + \"&status=\" + oo_flow_status\r\n\r\n        response = requests.get(getURL, auth=basicAuthCredentials, headers=authHeaders)\r\n        if response.status_code == 200:\r\n            executions = json.loads(response.content)\r\n            if executions:\r\n                for execution in executions:\r\n                    executionId = execution[\"executionId\"]\r\n                    startTime = execution[\"startTime\"]\r\n                    executionName = execution[\"executionName\"]\r\n                    status = execution[\"status\"]\r\n                    executions_list += '{ \"executionId\":\"' + str(executionId) + '\",\"startTime\":\"' + str(startTime) + '\",\"executionName\":\"' + str(executionName)+ '\",\"status\":\"' + str(status) + '\"},'\r\n                \r\n                executions_list = '[' +  executions_list[:-1] + ']'\r\n                result = \"True\"\r\n                message = \"OO Flow  execution list successfully retrieved for FLow Status:  \" + oo_flow_status\r\n            else:\r\n                result = \"True\"\r\n                message = \"No Flows Found with status: \" + oo_flow_status\r\n\r\n        else:\r\n            msg = 'Cannot Open Connection to OO Central, Wrong URL or Wrong User password'\r\n            errorType = 'e20000'\r\n            raise Exception(msg)\r\n    except Exception as e:\r\n        result = \"False\"\r\n        message = e\r\n        errorMessage = message\r\n        errorType = 'e20000'\r\n        errorProvider = 'OOExec'\r\n\r\n    return {\"result\": result, \"message\": message, \"errorType\": errorType, \"errorMessage\": errorMessage,\r\n            \"errorProvider\": errorProvider,\r\n            \"executions_list\": executions_list}"
+  outputs:
+    - result
+    - message
+    - errorType
+    - errorMessage
+    - errorProvider
+    - executions_list
+  results:
+    - SUCCESS: '${result == "True"}'
+    - FAILURE

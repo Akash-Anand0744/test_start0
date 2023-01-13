@@ -1,0 +1,20 @@
+namespace: Cerner.DigitalFactory.Common.JIRA.Operation
+operation:
+  name: availabilityCheck_Jira
+  inputs:
+    - MarketPlace_jiraIssueURL: "${get_sp('MarketPlace.jiraIssueURL')}"
+    - MarketPlace_jiraUser: "${get_sp('MarketPlace.jiraUser')}"
+    - MarketPlace_jiraPassword: "${get_sp('MarketPlace.jiraPassword')}"
+  python_action:
+    use_jython: false
+    script: "###############################################################\r\n#   OO operation for sync of Jira and Smax\r\n#   Author: Rakesh Sharma (rakesh.sharma@cerner.com)\r\n#   Inputs:\r\n#       -  MarketPlace_jiraIssueURL\r\n#       -  MarketPlace_jiraUser\r\n#       -  MarketPlace_jiraPassword\r\n#   Output\r\n#       - result\r\n#       - message\r\n###############################################################\r\nimport sys, os\r\nimport subprocess\r\n\r\n\r\n# function do download external modules to python \"on-the-fly\"\r\ndef install(param):\r\n    message = \"\"\r\n    result = \"\"\r\n    errorType = ''\r\n    errorMessage = ''\r\n    errorSeverity = ''\r\n    errorProvider = ''\r\n\r\n    try:\r\n\r\n        pathname = os.path.dirname(sys.argv[0])\r\n        message = os.path.abspath(pathname)\r\n        message = subprocess.call([sys.executable, \"-m\", \"pip\", \"list\"])\r\n        message = subprocess.run([sys.executable, \"-m\", \"pip\", \"install\", param], capture_output=True)\r\n        result = \"True\"\r\n\r\n    except Exception as e:\r\n        message = e\r\n        result = \"False\"\r\n        errorType = \"e20000\"\r\n        errorMessage = message\r\n        errorSeverity = \"ERROR\"\r\n        errorProvider = \"JIRA\"\r\n\r\n    return {\"result\": result, \"message\": message, \"errorType\": errorType, \"errorSeverity\": errorSeverity,\r\n            \"errorProvider\": errorProvider, \"errorMessage\": errorMessage}\r\n\r\n\r\n# requirement external modules\r\ninstall(\"requests\")\r\n\r\n\r\n# main function\r\ndef execute(MarketPlace_jiraIssueURL, MarketPlace_jiraUser, MarketPlace_jiraPassword):\r\n    message = \"\"\r\n    result = \"False\"\r\n    jiraFailureMessage = ''\r\n    errorType = ''\r\n    errorMessage = ''\r\n    errorSeverity = ''\r\n    errorProvider = ''\r\n\r\n    try:\r\n\r\n        import json\r\n        import requests\r\n\r\n        turl = '{0}rest/api/2/user?username={1}'.format(MarketPlace_jiraIssueURL, MarketPlace_jiraUser)\r\n\r\n        asicAuthCredentials = requests.auth.HTTPBasicAuth(MarketPlace_jiraUser, MarketPlace_jiraPassword)\r\n        headers = {'X-Atlassian-Token': 'no-check'}\r\n\r\n        response = requests.get(turl, auth=asicAuthCredentials, headers=headers)\r\n\r\n        if response.status_code == 200:\r\n            entityJsonArray = json.loads(response.content)\r\n            username = entityJsonArray[\"name\"]\r\n            if username == MarketPlace_jiraUser:\r\n                message = \"User details fetched, JIRA is available\"\r\n                result = \"True\"\r\n            else:\r\n                result = \"False\"\r\n                message = \"Issue getting jira user, Jira maybe unavailable or user credentials not working\"\r\n                raise Exception(message)\r\n        else:\r\n            message = \"Issue getting jira user, Jira maybe unavailable or user credentials not working\"\r\n            errorType = \"e20000\"\r\n            errorMessage = message\r\n            errorSeverity = \"ERROR\"\r\n            errorProvider = \"JIRA\"\r\n\r\n    except Exception as e:\r\n        message = \"Exception: \" + str(e)\r\n        result = \"False\"\r\n        errorType = \"e20000\"\r\n        errorMessage = message\r\n        errorSeverity = \"ERROR\"\r\n        errorProvider = \"JIRA\"\r\n\r\n    return {\"result\": result, \"message\": message, \"errorType\": errorType, \"errorSeverity\": errorSeverity,\r\n            \"errorProvider\": errorProvider, \"errorMessage\": errorMessage}"
+  outputs:
+    - result
+    - message
+    - errorType
+    - errorSeverity
+    - errorProvider
+    - errorMessage
+  results:
+    - SUCCESS: '${result=="True"}'
+    - FAILURE
