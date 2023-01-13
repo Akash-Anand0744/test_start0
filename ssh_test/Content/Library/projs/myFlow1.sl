@@ -1,6 +1,6 @@
 namespace: projs
 flow:
-  name: myFlow1
+  name: myFlow0
   inputs:
     - in_p: value
   workflow:
