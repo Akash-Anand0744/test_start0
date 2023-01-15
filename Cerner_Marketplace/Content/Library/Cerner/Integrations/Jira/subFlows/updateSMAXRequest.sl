@@ -8,36 +8,12 @@ flow:
         required: true
     - smaxRequestID
   workflow:
-    - get_sso_token:
+    - akash_flow1:
         do:
-          io.cloudslang.microfocus.service_management_automation_x.commons.get_sso_token:
-            - saw_url: "${get_sp('MarketPlace.smaxURL')}"
-            - tenant_id: "${get_sp('MarketPlace.tenantID')}"
-            - username: "${get_sp('MarketPlace.smaxIntgUser')}"
-            - password:
-                value: "${get_sp('MarketPlace.smaxIntgUserPass')}"
-                sensitive: true
-        publish:
-          - sso_token
-          - status_code
-          - errorMessage: '${exception}'
+          akash_flows_project.akash_flow1: []
         navigate:
           - FAILURE: FAILURE
-          - SUCCESS: update_entities
-    - update_entities:
-        do:
-          io.cloudslang.microfocus.service_management_automation_x.commons.update_entities:
-            - saw_url: "${get_sp('MarketPlace.smaxURL')}"
-            - sso_token: '${sso_token}'
-            - tenant_id: "${get_sp('MarketPlace.tenantID')}"
-            - json_body: "${'{\"entity_type\": \"Request\", \"properties\": { \"Id\": \"'+smaxRequestID+'\", \"JiraIncidentURL_c\": \"'+jiraIssueURL+'\", \"JiraIssueStatus_c\": \"Open\",\"RequestJiraIssueStatus_c\": \"Yes\", \"JiraIssueId_c\": \"'+jiraIssueId+'\"}, \"related_properties\" : { }  }'}"
-        publish:
-          - errorMessage: '${error_json}'
-          - return_result
-          - op_status
-        navigate:
-          - FAILURE: set_message
-          - SUCCESS: SUCCESS
+          - SUCCESS: akash_flow2
     - set_message:
         do:
           io.cloudslang.base.utils.do_nothing:
@@ -48,6 +24,12 @@ flow:
         navigate:
           - SUCCESS: FAILURE
           - FAILURE: on_failure
+    - akash_flow2:
+        do:
+          akash_flows_project.Operation.akash_flow2: []
+        navigate:
+          - FAILURE: set_message
+          - SUCCESS: SUCCESS
   outputs:
     - errorMessage: '${errorMessage}'
     - return_result: '${return_result}'
@@ -58,26 +40,26 @@ flow:
 extensions:
   graph:
     steps:
-      get_sso_token:
-        x: 202
-        'y': 84
-        navigate:
-          c8030ed1-516c-1102-7c5c-5524609b3941:
-            targetId: aa27e946-3123-f5a6-0822-7574205c9f86
-            port: FAILURE
-      update_entities:
-        x: 440
-        'y': 80
-        navigate:
-          7d6a03c5-fdd2-0634-d9ae-c3c6ee40fa2c:
-            targetId: 602e300e-9d6a-9429-10c2-e3eaf7d940d8
-            port: SUCCESS
       set_message:
         x: 440
         'y': 320
         navigate:
           17bec3a4-cfcf-c8e5-baab-26d09e0326e6:
             targetId: aa27e946-3123-f5a6-0822-7574205c9f86
+            port: SUCCESS
+      akash_flow1:
+        x: 200
+        'y': 80
+        navigate:
+          7345cbb8-5c16-07a3-697f-cdcac8421fd6:
+            targetId: aa27e946-3123-f5a6-0822-7574205c9f86
+            port: FAILURE
+      akash_flow2:
+        x: 480
+        'y': 80
+        navigate:
+          b7371390-ccf7-420a-d92f-68f52f7aaa99:
+            targetId: 602e300e-9d6a-9429-10c2-e3eaf7d940d8
             port: SUCCESS
     results:
       FAILURE:

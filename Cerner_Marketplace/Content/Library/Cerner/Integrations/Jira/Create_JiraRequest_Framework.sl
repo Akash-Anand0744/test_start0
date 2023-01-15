@@ -190,21 +190,6 @@ flow:
         navigate:
           - FAILURE: intialize_JiraProperty
           - SUCCESS: extractWatchersList_json
-    - updateSMAXRequest:
-        do:
-          Cerner.Integrations.Jira.subFlows.updateSMAXRequest:
-            - jiraIssueURL: '${jiraIssueURL}'
-            - jiraIssueId: '${jiraIssueId}'
-            - smaxRequestID: '${smaxRequestID}'
-        publish:
-          - errorMessage
-          - return_result
-          - errorProvider: SMAX
-          - errorType: e20000
-          - errorSeverity
-        navigate:
-          - FAILURE: MainErrorHandler
-          - SUCCESS: jira_substaks_isnull
     - Create_Issue_in_Jira_Framework:
         do:
           Cerner.DigitalFactory.Common.JIRA.SubFlow.Create_Issue_in_Jira_Framework:
@@ -352,6 +337,15 @@ flow:
         navigate:
           - SUCCESS: Updated_getRequestAttachUploadJira
           - FAILURE: on_failure
+    - updateSMAXRequest:
+        do:
+          Cerner.Integrations.Jira.subFlows.updateSMAXRequest:
+            - jiraIssueURL: '${jiraIssueURL}'
+            - jiraIssueId: '${jiraIssueId}'
+            - smaxRequestID: '${smaxRequestID}'
+        navigate:
+          - FAILURE: MainErrorHandler
+          - SUCCESS: jira_substaks_isnull
   outputs:
     - incidentCreationCode: '${incidentHttpStatusCode}'
     - incidentCreationResultJSON: '${jiraIncidentCreationResult}'
@@ -430,7 +424,7 @@ extensions:
         'y': 240
       Create_Issue_in_Jira_Framework:
         x: 560
-        'y': 600
+        'y': 520
       get_ID_for_jiraFields_from_OO_Config_to_jsonObject:
         x: 1040
         'y': 40
