@@ -8,6 +8,10 @@ flow:
         navigate:
           - FAILURE: on_failure
           - SUCCESS: SUCCESS
+    - on_failure:
+        - akash_flow1_1:
+            do:
+              akash_flows_project.akash_flow1: []
   results:
     - FAILURE
     - SUCCESS
