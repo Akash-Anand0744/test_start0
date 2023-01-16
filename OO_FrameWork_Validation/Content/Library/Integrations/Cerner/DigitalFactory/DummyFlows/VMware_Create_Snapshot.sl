@@ -110,9 +110,9 @@ extensions:
           b7554cc7-d262-64b3-0984-c2b2ea268b43:
             targetId: e1008642-af95-6037-44ed-2c14dcfbecd2
             port: success
-      Set_Status_Message_2:
-        x: 388
-        'y': 276
+      sleep_10_Sec:
+        x: 506
+        'y': 394
       Update_Component_With_FAILURE:
         x: 607
         'y': 68
@@ -127,11 +127,11 @@ extensions:
         x: 154
         'y': 190
       Set_Status_Message_1:
-        x: 799
-        'y': 395
-      sleep_10_Sec:
-        x: 506
-        'y': 394
+        x: 880
+        'y': 400
+      Set_Status_Message_2:
+        x: 388
+        'y': 276
     results:
       FAILURE:
         3226f756-c16e-1def-e6d8-f6ffe09d745b:
