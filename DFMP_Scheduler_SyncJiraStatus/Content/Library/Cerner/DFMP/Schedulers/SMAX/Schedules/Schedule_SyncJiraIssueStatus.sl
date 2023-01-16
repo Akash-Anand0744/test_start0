@@ -240,7 +240,7 @@ extensions:
         x: 80
         'y': 440
       getJiraIDs:
-        x: 400
+        x: 440
         'y': 440
       jiraIssueStatusUpdateSMAX:
         x: 680
