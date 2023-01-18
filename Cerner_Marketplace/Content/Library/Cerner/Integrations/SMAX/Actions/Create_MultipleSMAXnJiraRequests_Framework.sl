@@ -1,57 +1,772 @@
 ########################################################################################################################
 #!!
-#! @system_property jiraCustomFields1: If this reaches to its limit then use jiraCustomFields2
-#! @system_property jiraCustomFields2: If this reaches to its limit then use jiraCustomFields3
-#! @system_property jiraCustomFields3: If this reaches to its limit then use jiraCustomFields4
-#! @system_property jiraCustomFields4: If this reaches to its limit then work on creating a new  System Property
-#! @system_property Special_Characters: Special Characters that must be converted into JIRA Accepted Format
+#! @input is_onboarding_access_management: Is this Onboarding Access Management Offering, Allowed Values 'Yes' or 'No'. Default Value is 'No'
+#! @input offering_name: Name of the Offering for creating new Requests
+#! @input project_tool_mapping: jira project and jira tool mapping, project,tool1,tool2,||project,tool||project,default||  --tool value as default for project being default for tools
+#! @input request_tools: Comma separated list of JiraTools and first value should be the Jira tool field name like Key1,value1,value2,value3, etc.
+#! @input smaxRequestID: SMAX Request ID
+#! @input reporter: Issue Reporter
+#! @input watchers: Watcher(s) and NoWatcher if JIRA Project does not have watchers enabled.
+#! @input requestorEmail: requestor email
+#! @input description: Description of the Request or Issue
+#! @input summary: Summary title of the Request
+#! @input fields_append_toDescription: Fields that will be appended to Description field. Prefix all fields with toolname and "!" like tool!key1,value1||tool!key2,value2|| --tool value as Common if value common for all tools
+#! @input request_common_fields: Common request fields for all Tools like Project, priority, issuetype etc.  Add "id." as prefix to Key for sending ID values to Jira, Key Value Pair with delimiter (||) as Key1,Value1||Key2,Value2||
+#! @input get_jira_fields_fm_smax_config: Get Jira Custom Fields from SMAX Configuration, Prefix all fields with toolname and "!" like tool!fieldname1,value1||tool!fieldname2,value2||
+#! @input get_jira_fields_fm_oo_config: Get Jira Custom Fields from OO System Properties, Prefix all fields with toolname and "!" like tool!fieldname1,value1||tool!fieldname2,value2||
+#! @input get_id_value_fm_oo_config: Get ID value for Jira Fields from OO System Properties, Fields like project, issueType, jiraTool etc. Corresponding OO System Property must exist like project_JSON, issueType_JSON , jiraTool_JSON,Prefix all fields with toolname and "!" like tool!fieldname1,value1||tool!fieldname2,value2||
+#! @input hide_fields_In_Jira: Coma separated list for Jira Fields which needs to be hidden, not visible to User, Prefix all fields with toolname and "!" like tool!fieldname1,value1||tool!fieldname2,value2||
 #!!#
 ########################################################################################################################
-namespace: MarketPlace
-properties:
-  - jiraCustomFields1:
-      value: '{"jiraPriority":"priority","issuetype":"issuetype","cloudProvider":"customfield_29335","TenantName":"customfield_22250","TenantId":"customfield_29358","RoleName":"customfield_29360","TenantOwner":"customfield_22249","User(s)NeedingAccess":"customfield_29366","RemovetheseUsers":"customfield_30001","ServicePrincipalName":"customfield_29363","PermissionsNeeded":"customfield_29364","ModificationsNeeded":"customfield_29362","RoleRequestingAccessTo":"customfield_29367","cloudRequestType2AWSIAM":"customfield_29341","cloudRequestType2AzureRBAC":"customfield_29345","cloudRequestType2AzureSP":"customfield_29346","cloudRequestType2AzureUM":"customfield_29347","cloudRequestTypeNetworking":"customfield_29352","jiraToolIncident":"customfield_47004","jiraToolRequest":"customfield_47005","jiraProject":"project","jiraIssueType":"issuetype","cloudRequestCategoryAWS":"customfield_29337","cloudRequestCategoryAzure":"customfield_29338","cloudIssueRequestTypeAWS":"customfield_29343","cloudIssueRequestTypeAzure":"customfield_29348","SVNRepoURL":"customfield_46835","Depot":"customfield_46824","StreamNameFileLocation":"customfield_46823","GitHubInstance":"customfield_47209","jiraInstance":"customfield_47247","jiraIncidentProject":"customfield_47248","LinktoSoftware":"customfield_47220","CriticalityJustification":"customfield_47251","ArtifactoryRequestType":"customfield_47218","swExistInNexusFieldId":"customfield_47219","ArtifactoryInstance":"customfield_47215","WorkInstructions":"customfield_11311","ArtifactoryRepoType":"customfield_47221","ServiceAccPer":"customfield_47222","ProxyExternalID":"customfield_47224","justification":"customfield_47637","RepoUrl":"customfield_47216","PackageNumber":"customfield_12112","ProjectNumber":"customfield_11715","FeatureNumber":"customfield_15909","Pipeline":"customfield_47805","TargetPipeline":"customfield_47644","TargetRelease":"customfield_47645","projectStuck":"customfield_47806","requestDowntime":"customfield_47604","domain":"customfield_14515","startTime":"customfield_18807","stopTime":"customfield_47605","downtimeDetails":"customfield_47803","associateWorkingDowntime":"customfield_47606","yammerDowntimePost":"customfield_47607","teamName":"customfield_47641","manager":"customfield_47642","architect":"customfield_47643","productType":"customfield_47632","softwareRequest":"customfield_47633","softwareName":"customfield_47634","softwareVersion":"customfield_47635","softwareDescription":"customfield_47636","acquisitionStatus":"customfield_47638","locationSoftware":"customfield_47639","downloadLink":"customfield_47640","companyName":"customfield_47628","internetAddress":"customfield_47629","contactEmail":"customfield_47630"}'
-      sensitive: false
-  - jiraCustomFields2:
-      value: '{"licenseType":"customfield_47631","shippedPackages":"customfield_47626","NewTriggerEnhancement":"customfield_46825","GitHubRepoURL":"customfield_46848","SubversionRepoDetails":"customfield_47202","jenkinsJobLink":"customfield_46842","DNGProjectURL":"customfield_47114","ArtifactID":"customfield_47115","ITINID":"customfield_47116","GrokProjectName":"customfield_46838","ProjectNameLocation":"customfield_46839","JenkinsRequest":"customfield_46843","EggplantFunctionalVersion":"customfield_47100","DL":"customfield_46849","IntroductoryCR":"customfield_50308","AffectedCR":"customfield_50309","SolutionChange":"customfield_47233","AffectedPackages":"customfield_50310","artJobLink":"customfield_47212","artIssueEC":"customfield_50300","artIssueJenkins":"customfield_50301","artLinkSft":"customfield_50302","SolutionDevDomain":"customfield_47614","CodeSetNumber":"customfield_47615","SolutionTestFeatureNumber":"customfield_47616","EJSLink":"customfield_47200","ObsoleteImpactClients":"customfield_47608","ObsoleteFlashRequired":"customfield_47609","ObsoleteConsultingEngagement":"customfield_47610","ObsoleteChangeWorkflow":"customfield_47611","ObsoleteContractualImpacts":"customfield_47612","ObsoleteENDOFLIFE":"customfield_47613","ChangeForSolution":"customfield_47112","ChangeForSolutionDetail":"customfield_47113","NewTeamRequestType":"customfield_47621","NewTeamName":"customfield_22711","CrucibleRequestType":"customfield_46834"}'
-      sensitive: false
-  - jiraCustomFields3:
-      value: '{"supportBuilds":"customfield_47627","platform":"customfield_47804","Application":"customfield_47229","FlashNumber":"customfield_47133","ReleasetoAdd":"customfield_47134","SolutionNametoAdd":"customfield_47135","ObsoletePackage":"customfield_47622","PackagePlatform":"customfield_47804","PackageNumberRelease":"customfield_47623","ClientMnemonic":"customfield_20205","ReplacementPackage":"customfield_47624","PipelineInstanceFAQ":"customfield_47617","ResponsibilityToEnsure":"customfield_47618","ComponentsToBump":"customfield_47619","TargetRelease":"customfield_47620","RequestManagerFormNumber":"customfield_47237","CausesProblem":"customfield_47236","EggplantFunctional":"customfield_47100","AUTOREVBRDTeamName":"customfield_18002","AUTOREVBRDATTool":"customfield_22400","AUTOREVBRDRepository":"customfield_22401","AUTOREVBRDTestProject":"customfield_22402","AUTOREVBRDRequestType":"customfield_21308","AUTOREVBRDReqTySupport":"customfield_22820","PMADesigner":"customfield_16418","PMAIPAssest":"customfield_26344","PMAIPSubAssest":"customfield_26345","PMACompletion":"customfield_13407","PMAassociates":"customfield_15317","PMASession":"customfield_51203","PMAJustification":"customfield_18434","PMAImpactGroup":"customfield_15318","PMARegions":"customfield_38113","TaskID":"customfield_16007"}'
-      sensitive: false
-  - jiraCustomFields4:
-      value: '{"CrucibleInstance":"customfield_46832","CrucibleProjectURL":"customfield_46833","ToolAccess":"customfield_47002","NeedInstallation":"customfield_46821","Title":"customfield_31423","AssociateID":"customfield_46828","ProductGroup":"customfield_46829","Environment":"customfield_10605","SupportArea":"customfield_50700","WorkGroup":"customfield_23607","Tier1Environment":"customfield_19610","LicenseNeeded":"customfield_47122","GrantedViaAccess":"customfield_47123","jiraToolQuestion":"customfield_47003","jiraToolAccess":"customfield_47002","RoleRequested":"customfield_49602","AccessRequestorJobTitle":"customfield_49601","SCSWebAccessType":"customfield_47241","SCSMVSEnterCopy":"customfield_47242","PermissionType":"customfield_47243","SpecifyDomain":"customfield_47244","SCSMVSRoles":"customfield_47245","ArtifactoryAccessType":"customfield_47225","ArtifactoryReadWrite":"customfield_47226","FTPTSolution":"customfield_47401","FeatureTrackerRole":"customfield_47403","PackageTrackerRole":"customfield_47405","PrivilegeRequest":"customfield_47406","AccessRequestingFor":"customfield_47127","FeaturePrivilegeRequest":"customfield_47404","DomainApplication":"customfield_19611","ProvideJustification":"customfield_49604","RequestType":"customfield_22820","BusinessUnit":"customfield_15319","FileshareLocation":"customfield_47119","TestingStream":"customfield_14201","SRNumber":"customfield_10100"}'
-      sensitive: false
-  - test2key_JSON: |-
-      {
-      "testkey id 1": 1551,
-      "testkey id 2": 1552,
-      "testkey id 3": 1553
-      }
-  - test1_JSON: |-
-      {
-      "test id 1": 1221,
-      "test id 2": 1222,
-      "test id 3": 1223
-      }
-  - jiraPriority_JSON: '{  "Critical_c":1, "High_c":2, "Medium_c":3, "Low_c":4, "CriticalPriority":1, "HighPriority":2, "MediumPriority":3, "LowPriority":4, "NonPrioritized_c":5,"Critical":1, "High":2, "Medium":3, "Low":4 }'
-  - project_JSON: '{"DFAPPSUP":"40703","ABLREQ":"11604","CLOUDBROKER":"21212","ABLIPDOM":"12414","TDMI":"24301","TDS":"30901","EGGSUTLAB":"26202","AUTOREVBRD":"21218","ABILITIES":"35400","PMA":"37900","CAPA":"46200"}'
-  - issuetype_JSON: '{"Request":"18","Question":"24","Access":"27500","Incident":"46","Sub-task":"5","Change Request":"51","ABLGM - Change Request":"31100","Epic":"8","Inbound-Request":"83","Inbound-Bug":"84","Inbound-Enhancement":"85","Support":"11200","Support Request":"181","Abilities Lab Engagement":"28700","Platinum Master Approval":"29800","CAPA":"11100"}'
-  - jiraToolIncident_JSON: '{"AccuRev":"70854","ADPART":"70855","Affected/Resolved Packages":"70870","Artifactory":"70856","BOM Builder":"71018","Build Processing":"71019","Cerner Code Search":"70835","Cerner Delivery Pipeline":"79700","CI Dashboard":"71020","Crucible":"70850","Cumulative Text Tool (CTT)":"70876","Deinstall App":"70859","Distributions.cerner.com":"70842","DM Starter Data Wizard":"71021","DNG (Doors Next Generation)":"70843","Documentation – TDB Publisher":"70853","Eggplant":"70869","Electric Commander":"70836","Factory Marketplace":"78316","Feature Tracker":"71022","FlashPoint":"70833","Gem In A Box":"73701","GitHub":"70837","Grok (HS)":"70860","Jenkins":"70848","JIRA":"70703","JIRA Align":"78601","Klocwork":"70834","Krugle":"70838","ml-native":"71024","Nexus Repositories":"70839","Octopus Deploy":"70873","Package Tracker":"71028","Packaging":"71029","Pipeline Instance Modification":"71030","Quality Center":"70861","Release Names":"71031","Request Manager":"70845","Revision Info":"70846","Root Cause Tool":"70847","RQM (Rational Quality Manager)":"70868","RQM - Continuous Testing":"73700","SCS/MVS":"70863","SCS/PC":"70866","SCS/Web":"70862","SelfService Tool":"70865","Software Asset Inventory":"73705","SonarQube":"70875","Subversion":"70840","Test Bench":"70844","Test Export Tool":"70874","TextCaliber":"70867","Triton":"71032","VersionOne":"70864","Vesta":"70841","OpenGrok":"80300"}'
-  - jiraToolRequest_JSON: '{"AccuRev":"70877","ADPART":"70878","Affected/Resolved Packages":"70919","Artifactory":"70879","Build Processing":"71034","Cerner Code Search":"70882","CI Dashboard":"71035","Code Signing":"70918","Crucible":"70883","Cumulative Text Tool (CTT)":"70924","Deinstall App":"70884","Distributions.cerner.com":"70885","DM Starter Data Wizard":"71036","DNG (Doors Next Generation)":"70886","Documentation – TDB Publisher":"70906","Eggplant":"70916","Electric Commander":"70888","Feature Tracker":"71037","Feature Tracker – Obsolete Project":"71038","FlashPoint":"70889","GitHub":"70892","Grok (HS)":"70893","Jenkins":"70894","JIRA":"70704","JIRA Align":"78506","Klocwork":"70895","Krugle":"70896","ml-native":"71039","Naming Standards":"70897","New Team Request":"71040","Nexus Repositories":"70912","Octopus Deploy":"70921","OTS":"71041","OTS Software Request":"71042","Package Tracker":"71043","Packaging":"71044","Pipeline Instance Modification":"71045","Quality Center":"70899","Release Names":"70910","Request Manager":"70900","Revision Info":"70901","Root Cause Tool":"70902","RQM (Rational Quality Manager)":"70914","SCS/MVS":"70904","SCS/PC":"70913","SCS/Web":"70903","SelfService Tool":"70911","Software Asset Inventory":"73703","Solution and Asset Request Process":"70920","SonarQube":"70923","Subversion":"70905","Test Bench":"70907","Test Export Tool":"70922","TextCaliber":"70915","Triton":"71046","VersionOne":"70908","Vesta":"70909","OpenGrok":"80201","Cerner Deliver Pipeline":"93700"}'
-  - cloudRequestCategoryAWS_JSON: '{"IAM_c":"39767","Networking_c":"39770","ITSMPassportIssue_c":"68804","TenantMigration_c":"74432","RequestAssistance":"39769"}'
-  - cloudRequestCategoryAzure_JSON: '{"UserManagement_c":"39774","RBAC_c":"39772","ServicePrincipal_c":"39773","Networking_c":"39942","RequestAssistance":"39775","None":"62517"}'
-  - cloudIssueRequestTypeAWS_JSON: '{"Issue":"39791"}'
-  - cloudIssueRequestTypeAzure_JSON: '{"Issue":"39804"}'
-  - cloudProvider_JSON: '{"AWS_c":"39763","Azure_c":"39764"}'
-  - cloudRequestType2AWSIAM_JSON: '{"CreateRole_c":"39783","ModifyRole_c":"39784","DeleteRole_c":"39785","CreateIAMUser_c":"39786","ModifyIAMUser_c":"39787","DeleteIAMUser_c":"39788","CreateSCP_c":"68801","ModifySCP_c":"68802","DeleteSCP_c":"68803","AddUserAccesstoRole_c":"39802","RemoveUserAccessfromRole_c":"39803"}'
-  - cloudRequestTypeNetworking_JSON: '{"VPCCreation_c":"39811","VPCDeletion_c":"68600","VPNImplementation_c":"39812","VPCPeering_c":"39814","DNSCrossAccountZoneAssociation_c":"39813","NetworkTroubleshooting_c":"39815","InternetFacingEndpointCreation_c":"39815","VNetCreation_c":"39811","VNetDeletion_c":"68600","VNetPeering_c":"39814"}'
-  - cloudRequestType2AzureRBAC_JSON: '{"CreateCustomRBAC_c":"39796","ModifyCustomRBAC_c":"39797","DeleteCustomRBAC_c":"39798"}'
-  - cloudRequestType2AzureSP_JSON: '{"CreateServicePrincipal_c":"39799","ModifyServicePrincipal_c":"39800","DeleteServicePrincipal_c":"39801"}'
-  - cloudRequestType2AzureUM_JSON: '{"AddUserAccess_c":"39802","RemoveUserAccess_c":"39803"}'
-  - ArtifactoryRequestType_JSON: '{"Deploy Software":"71778","Create Repository":"71779","Other":"71780","Delete File/Folder":"71780","Restore File/Folder":"71780","Delete Repository":"71780"}'
-  - swExistInNexusFieldId_JSON: '{"Yes":"71781", "No":"71782"}'
-  - Special_Characters:
-      value: "\\t\\n\\r\\\\"
-      sensitive: false
-  - ProxyExternalID_JSON: '{"true":"71817", "false":"71818"}'
-  - jiraToolAccess_JSON: '{"AccuRev":"70673","Artifactory":"70675","Crucible":"70677","DNG (Doors Next Generation)":"70678","Eggplant":"70679","EPRM":"80603","Feature Tracker":"70392","GitHub":"70681","JIRA - uDevelop Instance":"70701","JIRA Align":"78700","Octopus Deploy":"70682","Package Tracker":"70398","Quality Center":"70683","Request Manager":"70684","RQM (Rational Quality Manager)":"70685","SCS/MVS":"70686","SCS/Web":"70687","SecureJIRA":"74140","SelfService Tool":"70688","SonarQube":"70689","VersionOne":"70691"}'
+namespace: Cerner.Integrations.SMAX.Actions
+flow:
+  name: Create_MultipleSMAXnJiraRequests_Framework
+  inputs:
+    - is_onboarding_access_management: 'No'
+    - offering_name: Associate and Contractor Onboarding-Template
+    - project_tool_mapping
+    - request_tools
+    - smaxRequestID
+    - reporter
+    - watchers:
+        required: false
+    - requestorEmail
+    - description
+    - summary
+    - fields_append_toDescription:
+        default: ''
+        required: false
+    - request_common_fields:
+        required: true
+    - get_jira_fields_fm_smax_config:
+        default: ''
+        required: false
+    - get_jira_fields_fm_oo_config:
+        default: ''
+        required: false
+    - get_id_value_fm_oo_config:
+        default: ''
+        required: false
+    - hide_fields_In_Jira:
+        default: ''
+        required: false
+  workflow:
+    - get_SMAXToken:
+        do:
+          Cerner.DigitalFactory.Common.SMAX.Operation.get_SMAXToken: []
+        publish:
+          - result
+          - smax_token: '${token}'
+          - message
+          - errorMessage
+          - errorSeverity
+          - errorProvder
+          - errorType
+          - requestCreationStatus: INPROGRESS
+        navigate:
+          - SUCCESS: SMAX_getEntityDetails_from_MultipleSMAXnJiraRequests
+          - FAILURE: on_failure
+    - Create_JiraRequest_Framework:
+        do:
+          Cerner.Integrations.Jira.Create_JiraRequest_Framework:
+            - smaxRequestID: '${smax_request_id_tool}'
+            - reporter: '${reporter}'
+            - watchers: '${watchers_tool}'
+            - requestorEmail: '${requestorEmail}'
+            - description: '${description_tool}'
+            - fields_append_toDescription: '${fields_append_toDescription_tool}'
+            - jira_direct_fields: '${jira_direct_fields_tool}'
+            - get_jira_fields_fm_smax_config: '${get_jira_fields_fm_smax_config_tool + request_common_fields_tool}'
+            - get_jira_fields_fm_oo_config: '${get_jira_fields_fm_oo_config_tool}'
+            - get_id_value_fm_oo_config: '${get_id_value_fm_oo_config_tool}'
+            - hide_fields_In_Jira: '${hide_fields_In_Jira_tool}'
+        publish:
+          - incidentCreationCode
+          - incidentCreationResultJSON
+          - jiraIssueURL
+          - jiraIssueId: "${cs_replace(cs_replace(cs_json_query(incidentCreationResultJSON,'key'),'[\"',''),'\"]','')}"
+        navigate:
+          - FAILURE: set_request_status
+          - SUCCESS: set_jira_remedy_issue_urls
+    - SMAX_getEntityDetails_from_MultipleSMAXnJiraRequests:
+        do:
+          Cerner.DigitalFactory.Common.SMAX.Operation.SMAX_getEntityDetails:
+            - smax_auth_token: '${smax_token}'
+            - entity: MultipleSMAXnJiraRequests_c
+            - query_field: "${\"ParentRequestId_c,'\" + smaxRequestID +\"'\"}"
+            - entity_fields: 'Id,ParentRequestId_c,RequestId_c,RequestTool_c,JiraIssueId_c'
+        publish:
+          - result
+          - MultipleSMAXnJIra_records: '${records}'
+          - data_json_MultipleSMAXnJiraRequests: '${entity_data_json[1:-1]}'
+          - message
+          - errorMessage
+          - errorSeverity
+          - errorProvder
+          - errorType
+          - entity_data_json
+          - resolution_comment: '<table><tr> <th style="width:60px">MP Request#</th>   <th style="width:200px">Requested Jira Tool</th><th style="width:200px">Jira#/Remedy#</th></tr>'
+        navigate:
+          - SUCCESS: SMAX_getEntityDetails_from_GetOffeing_ID
+          - FAILURE: on_failure
+    - MultipleSMAXnJIra_Entity_ReturnRecords_Null:
+        do:
+          io.cloudslang.base.strings.string_equals:
+            - first_string: '${MultipleSMAXnJIra_records}'
+            - second_string: '0'
+            - ignore_case: 'true'
+        publish:
+          - smax_request_already_created: ''
+        navigate:
+          - SUCCESS: prepareValues_for_jiraToolRequest_1
+          - FAILURE: string_occurrence_counter_ifSMAXRequestCreated
+    - list_iterator_RequestTools:
+        do:
+          io.cloudslang.base.lists.list_iterator:
+            - list: '${jira_tool_value}'
+            - separator: ','
+        publish:
+          - result_string
+          - return_result
+          - return_code
+          - jira_request_tool: '${result_string.strip()}'
+        navigate:
+          - HAS_MORE: getProjectTool
+          - NO_MORE: is_onboarding_access_mgmt
+          - FAILURE: on_failure
+    - extract_jiraToolkey_value:
+        do:
+          io.cloudslang.base.utils.do_nothing:
+            - key_value: "${request_tools.strip(']').strip('[')}"
+        publish:
+          - jira_tool_key: "${key_value.split(',',1)[0].strip()}"
+          - jira_tool_value: "${cs_replace(cs_replace(key_value.split(',',1)[1].strip(),']',''),'[','')}"
+        navigate:
+          - SUCCESS: If_jira_tool_is_null
+          - FAILURE: on_failure
+    - SMAX_entityOperations_CreateRequest:
+        do:
+          Cerner.DigitalFactory.Common.SMAX.Operation.SMAX_entityOperations:
+            - smax_auth_token: '${smax_token}'
+            - entity: Request
+            - operation: CREATE
+            - smax_data: "${'RequestsOffering,' + Offering_Id + '||Description,' + description_tool + '||DisplayLabel,' + summary_tool+ '||Summary_c,' + summary_tool+ '||Priority,MediumPriority'  + '||JiraToolRequest_c,' + jira_request_tool+ '||RequestType,ServiceRequest||RequestedByPerson,' +requestor_person_id + '||'}"
+            - is_custom_app: 'No'
+        publish:
+          - result
+          - smax_request_id_tool: '${entity_id}'
+          - message
+          - errorMessage
+          - errorSeverity
+          - errorProvder
+          - errorType
+        navigate:
+          - SUCCESS: SMAX_entityOperations_CreateAssociateOnBoarding_record
+          - FAILURE: on_failure
+    - SMAX_entityOperations_CreateAssociateOnBoarding_record:
+        do:
+          Cerner.DigitalFactory.Common.SMAX.Operation.SMAX_entityOperations:
+            - smax_auth_token: '${smax_token}'
+            - entity: MultipleSMAXnJiraRequests_c
+            - operation: CREATE
+            - smax_data: "${'ParentRequestId_c,' +smaxRequestID + '||RequestId_c,' +smax_request_id_tool + '||RequestTool_c,' + jira_request_tool+ '||RequestSummary_c,' +summary_tool + '||DisplayLabel,'+summary_tool + '||RequestDescription_c,'+ description_tool + '||'}"
+            - is_custom_app: 'Yes'
+        publish:
+          - result
+          - errorMessage
+          - errorSeverity
+          - errorProvder
+          - errorType
+          - message
+          - associate_onboarding_entity_id: '${entity_id}'
+        navigate:
+          - SUCCESS: Is_tool_Remedy
+          - FAILURE: on_failure
+    - SMAX_entityOperations_UpdateAssociateOnBoarding_record:
+        do:
+          Cerner.DigitalFactory.Common.SMAX.Operation.SMAX_entityOperations:
+            - smax_auth_token: '${smax_token}'
+            - entity: MultipleSMAXnJiraRequests_c
+            - operation: UPDATE
+            - smax_data: "${'Id,' +associate_onboarding_entity_id + '||JiraIssueId_c,' +jiraIssueId + '||'}"
+            - is_custom_app: 'Yes'
+            - resolution_comment: '${resolution_comment}'
+            - smax_request_id_tool: '${smax_request_id_tool}'
+            - jira_request_tool: '${jira_request_tool}'
+            - jiraIssueId: '${jiraIssueId}'
+            - smax_request_tool_url: "${'<a href=\"{0}/saw/ess/requestTracking/{1}\">{1}</a>'.format(get_sp('Cerner.DigitalFactory.SMAX.smaxURL'),smax_request_id_tool)}"
+            - jira_request_tool_url: '${jira_request_tool_url}'
+        publish:
+          - result
+          - message
+          - errorMessage
+          - errorSeverity
+          - errorProvder
+          - errorType
+          - resolution_comment: "${resolution_comment + '<tr><td>{0}</td><td>{1}</td> <td>{2}</td></tr>'.format(smax_request_tool_url,jira_request_tool.split('|')[0],jira_request_tool_url)}"
+          - associate_onboarding_entity_id: '${entity_id}'
+        navigate:
+          - SUCCESS: list_iterator_RequestTools
+          - FAILURE: on_failure
+    - string_occurrence_counter_ifSMAXRequestCreated:
+        do:
+          io.cloudslang.base.strings.string_occurrence_counter:
+            - string_in_which_to_search: '${data_json_MultipleSMAXnJiraRequests}'
+            - string_to_find: '${jira_request_tool}'
+        publish:
+          - return_result
+          - return_code
+          - error_message
+        navigate:
+          - SUCCESS: list_iterator_RequestTools_SMAXRecords
+          - FAILURE: prepareValues_for_jiraToolRequest_1
+    - list_iterator_RequestTools_SMAXRecords:
+        do:
+          io.cloudslang.base.lists.list_iterator:
+            - list: '${data_json_MultipleSMAXnJiraRequests}'
+            - separator: '},'
+        publish:
+          - result_string
+          - return_result
+          - return_code
+          - SMAXRecord: "${result_string + '}'}"
+        navigate:
+          - HAS_MORE: get_SMAXRecord_fieldValues
+          - NO_MORE: list_iterator_RequestTools_SMAXRecords_1
+          - FAILURE: on_failure
+    - get_SMAXRecord_fieldValues:
+        do:
+          io.cloudslang.base.utils.do_nothing:
+            - SMAXRecord: "${cs_replace(SMAXRecord,'}}','}')}"
+        publish:
+          - smax_request_tool: "${cs_replace(cs_replace(cs_replace(cs_json_query(SMAXRecord,'RequestTool_c'),']',''),'[',''),'\"','')}"
+          - smax_request_id_tool: "${cs_replace(cs_replace(cs_replace(cs_json_query(SMAXRecord,'RequestId_c'),']',''),'[',''),'\"','')}"
+          - associate_onboarding_entity_id: "${cs_replace(cs_replace(cs_replace(cs_json_query(SMAXRecord,'Id'),']',''),'[',''),'\"','')}"
+          - jiraIssueId: "${cs_replace(cs_replace(cs_replace(cs_json_query(SMAXRecord,'JiraIssueId_c'),']',''),'[',''),'\"','')}"
+        navigate:
+          - SUCCESS: Entity_ReturnRecords_tool_found
+          - FAILURE: on_failure
+    - Entity_ReturnRecords_tool_found:
+        do:
+          io.cloudslang.base.strings.string_equals:
+            - first_string: '${jira_request_tool}'
+            - second_string: '${smax_request_tool}'
+            - ignore_case: 'true'
+        publish: []
+        navigate:
+          - SUCCESS: Entity_ReturnRecords_tool_jiraIssueIdNotNUll
+          - FAILURE: list_iterator_RequestTools_SMAXRecords
+    - Entity_ReturnRecords_tool_jiraIssueIdNotNUll:
+        do:
+          io.cloudslang.base.strings.string_equals:
+            - first_string: '${jiraIssueId}'
+            - second_string: ''
+            - ignore_case: 'true'
+            - smax_request_already_created: 'Yes'
+        publish:
+          - smax_request_already_created
+        navigate:
+          - SUCCESS: prepareValues_for_jiraToolRequest_1
+          - FAILURE: Is_tool_Remedy_1
+    - SMAX_entityOperations_CloseRequest:
+        do:
+          Cerner.DigitalFactory.Common.SMAX.Operation.SMAX_entityOperations:
+            - smax_auth_token: '${smax_token}'
+            - entity: Request
+            - operation: UPDATE
+            - smax_data: "${'Id,'+ smaxRequestID + '||CompletionCode,CompletionCodeFulfilledInJira_c||Solution,' + resolution_comment + '||Status,RequestStatusComplete||CloseTime,' + EndDate + '||Summary_c,' + parent_offering_name + '||'}"
+            - is_custom_app: 'No'
+        publish:
+          - result
+          - entity_id
+          - message
+          - errorMessage
+          - errorSeverity
+          - errorProvder
+          - errorType
+          - requestCreationStatus: SUCCESS
+        navigate:
+          - SUCCESS: SUCCESS
+          - FAILURE: on_failure
+    - SMAX_getEntityDetails_from_GetOffeing_ID:
+        do:
+          Cerner.DigitalFactory.Common.SMAX.Operation.SMAX_getEntityDetails:
+            - smax_auth_token: '${smax_token}'
+            - entity: Offering
+            - query_field: "${\"DisplayLabel,'\" + offering_name + \"' and Status='Internal'\"}"
+            - entity_fields: Id
+        publish:
+          - result
+          - records
+          - Offering_Id: "${cs_replace(cs_replace(cs_replace(cs_replace(entity_data_json[1:-1],'\"Id\":',''),'\"',''),'}',''),'{','')}"
+          - message
+          - errorMessage
+          - errorSeverity
+          - errorProvder
+          - errorType
+          - entity_data_json
+        navigate:
+          - SUCCESS: SMAX_getEntityDetails_from_Person_RequestorId
+          - FAILURE: on_failure
+    - SMAX_getEntityDetails_from_Person_RequestorId:
+        do:
+          Cerner.DigitalFactory.Common.SMAX.Operation.SMAX_getEntityDetails:
+            - smax_auth_token: '${smax_token}'
+            - entity: Person
+            - query_field: "${\"Upn,'\" + reporter + \"'\"}"
+            - entity_fields: Id
+        publish:
+          - result
+          - records
+          - requestor_person_id: "${cs_replace(cs_replace(cs_replace(cs_replace(entity_data_json[1:-1],'\"Id\":',''),'\"',''),'}',''),'{','')}"
+          - message
+          - errorMessage
+          - errorSeverity
+          - errorProvder
+          - errorType
+          - entity_data_json
+        navigate:
+          - SUCCESS: extract_jiraToolkey_value
+          - FAILURE: on_failure
+    - set_resolution_comment:
+        do:
+          io.cloudslang.base.utils.do_nothing:
+            - resolution_comment: '${resolution_comment}'
+            - jira_request_tool: "${jira_request_tool.split('|')[0]}"
+            - smax_request_id_tool: '${smax_request_id_tool}'
+            - smax_request_tool_url: "${'<a href=\"{0}/saw/ess/requestTracking/{1}\">{1}</a>'.format(smax_url,smax_request_id_tool)}"
+            - jiraIssueId: '${jiraIssueId}'
+            - jira_request_tool_url: "${'<a href=\"' +  get_sp('MarketPlace.jiraIssueURL') + 'browse/{0}\">{0}</a>'.format(jiraIssueId)}"
+        publish:
+          - resolution_comment: "${resolution_comment + '<tr><td>{0}</td><td>{1}</td> <td>{2}</td></tr>'.format(smax_request_tool_url,jira_request_tool,jira_request_tool_url)}"
+        navigate:
+          - SUCCESS: list_iterator_RequestTools
+          - FAILURE: on_failure
+    - set_request_status:
+        do:
+          io.cloudslang.base.utils.do_nothing: []
+        publish:
+          - requestCreationStatus: FAILED
+        navigate:
+          - SUCCESS: FAILURE
+          - FAILURE: FAILURE
+    - get_millis_CurrentTime:
+        do:
+          io.cloudslang.microfocus.base.datetime.get_millis: []
+        publish:
+          - EndDate: '${time_millis}'
+          - time_millis
+          - VmStatusDate: '${time_millis}'
+        navigate:
+          - SUCCESS: SMAX_getEntityDetails_GetParentOfferingName
+    - If_jira_tool_is_null:
+        do:
+          io.cloudslang.base.strings.string_equals:
+            - first_string: '${jira_tool_value.strip()}'
+            - second_string: ''
+            - ignore_case: 'true'
+        publish: []
+        navigate:
+          - SUCCESS: set_resolution_comment_1_1
+          - FAILURE: list_iterator_RequestTools
+    - set_resolution_comment_1:
+        do:
+          io.cloudslang.base.utils.do_nothing:
+            - resolution_comment_last: "${get_sp('MarketPlace.access_mgmt_resolution_comment')}"
+            - resolution_comment: '${resolution_comment}'
+        publish:
+          - resolution_comment: "${resolution_comment + '<br>' + resolution_comment_last}"
+        navigate:
+          - SUCCESS: get_millis_CurrentTime
+          - FAILURE: on_failure
+    - set_resolution_comment_1_1:
+        do:
+          io.cloudslang.base.utils.do_nothing:
+            - resolution_comment: "${get_sp('MarketPlace.OnBoarding_resolution_comment')}"
+        publish:
+          - resolution_comment
+        navigate:
+          - SUCCESS: get_millis_CurrentTime
+          - FAILURE: on_failure
+    - Is_tool_Remedy:
+        do:
+          io.cloudslang.base.strings.string_equals:
+            - first_string: '${project_tool.lower()}'
+            - second_string: remedy
+            - ignore_case: 'true'
+        publish: []
+        navigate:
+          - SUCCESS: Create_IncidentIn_Remedy
+          - FAILURE: Create_JiraRequest_Framework
+    - Create_IncidentIn_Remedy:
+        do:
+          Cerner.Integrations.Remedy.SubFlows.Create_IncidentIn_Remedy:
+            - reporter: '${reporter}'
+            - description: '${description_tool}'
+            - fields_append_toDescription: '${fields_append_toDescription_tool}'
+            - tool_access: '${jira_request_tool}'
+            - summary: '${summary_tool}'
+        publish:
+          - remedy_incident_id
+          - message
+          - errorMessage
+          - errorType
+          - errorSeverity
+          - errorProvider
+          - jiraIssueId: '${remedy_incident_id}'
+          - remedy_resolution_comment: "${'Remedy Incident ticket# <a href=\"' + get_sp('Cerner.DigitalFactory.Remedy.remedyaskURL') + '\">' + remedy_incident_id + '</a> has been created successfully. ' +  get_sp('Cerner.DigitalFactory.Remedy.remedyReqResolutionComment')}"
+        navigate:
+          - FAILURE: on_failure
+          - SUCCESS: get_millis_CurrentTime_1
+    - prepareValues_for_jiraToolRequest_1:
+        do:
+          Cerner.Integrations.SMAX.Operation.prepareValues_for_jiraToolRequest:
+            - jira_tool_key: '${jira_tool_key}'
+            - jira_request_tool: "${jira_request_tool.split('|')[0]}"
+            - project_tool_mapping: '${project_tool_mapping}'
+            - watchers: '${watchers}'
+            - summary: '${summary}'
+            - description: '${description}'
+            - fields_append_toDescription: '${fields_append_toDescription}'
+            - request_common_fields: '${request_common_fields}'
+            - get_jira_fields_fm_smax_config: '${get_jira_fields_fm_smax_config}'
+            - get_jira_fields_fm_oo_config: '${get_jira_fields_fm_oo_config}'
+            - get_id_value_fm_oo_config: '${get_id_value_fm_oo_config}'
+            - hide_fields_In_Jira: '${hide_fields_In_Jira}'
+        publish:
+          - watchers_tool
+          - get_jira_fields_fm_smax_config_tool
+          - get_jira_fields_fm_oo_config_tool
+          - get_id_value_fm_oo_config_tool
+          - hide_fields_In_Jira_tool
+          - result
+          - message
+          - errorType
+          - errorSeverity
+          - errorProvider
+          - errorMessage
+          - request_common_fields_tool
+          - summary_tool
+          - description_tool
+          - jira_direct_fields_tool
+          - fields_append_toDescription_tool
+        navigate:
+          - SUCCESS: Is_smax_request_already_created
+          - FAILURE: on_failure
+    - Is_smax_request_already_created:
+        do:
+          io.cloudslang.base.strings.string_equals:
+            - first_string: '${smax_request_already_created}'
+            - second_string: 'Yes'
+            - ignore_case: 'true'
+        publish: []
+        navigate:
+          - SUCCESS: Is_tool_Remedy
+          - FAILURE: SMAX_entityOperations_CreateRequest
+    - SMAX_entityOperations_CloseChildRequest:
+        do:
+          Cerner.DigitalFactory.Common.SMAX.Operation.SMAX_entityOperations:
+            - smax_auth_token: '${smax_token}'
+            - entity: Request
+            - operation: UPDATE
+            - smax_data: "${'Id,'+ smax_request_id_tool + '||CompletionCode,CompletionCodeFulfilledInJira_c||Solution,' + remedy_resolution_comment + '||Status,RequestStatusComplete||CloseTime,' + EndDate + '||RemedyIncidentId_c,' +remedy_incident_id+ '||'}"
+            - is_custom_app: 'No'
+        publish:
+          - result
+          - entity_id
+          - message
+          - errorMessage
+          - errorSeverity
+          - errorProvder
+          - errorType
+          - requestCreationStatus: SUCCESS
+          - jiraIssueURL: "${get_sp('Cerner.DigitalFactory.Remedy.remedyaskURL')}"
+        navigate:
+          - SUCCESS: set_jira_remedy_issue_urls
+          - FAILURE: on_failure
+    - get_millis_CurrentTime_1:
+        do:
+          io.cloudslang.microfocus.base.datetime.get_millis: []
+        publish:
+          - EndDate: '${time_millis}'
+          - time_millis
+        navigate:
+          - SUCCESS: SMAX_entityOperations_CloseChildRequest
+    - is_onboarding_access_mgmt:
+        do:
+          io.cloudslang.base.strings.string_equals:
+            - first_string: '${is_onboarding_access_management}'
+            - second_string: 'Yes'
+            - ignore_case: 'true'
+        publish: []
+        navigate:
+          - SUCCESS: set_resolution_comment_for_Onbaording
+          - FAILURE: set_resolution_comment_1
+    - set_resolution_comment_for_Onbaording:
+        do:
+          io.cloudslang.base.utils.do_nothing:
+            - resolution_comment_last: "${get_sp('MarketPlace.onboarding_resolution_comment')}"
+            - resolution_comment: '${resolution_comment}'
+        publish:
+          - resolution_comment: "${resolution_comment + '<br>' + resolution_comment_last}"
+        navigate:
+          - SUCCESS: get_millis_CurrentTime
+          - FAILURE: on_failure
+    - SMAX_getEntityDetails_GetParentOfferingName:
+        do:
+          Cerner.DigitalFactory.Common.SMAX.Operation.SMAX_getEntityDetails:
+            - smax_auth_token: '${smax_token}'
+            - entity: Request
+            - query_field: "${\"Id,'\" + smaxRequestID +\"'\"}"
+            - entity_fields: RequestsOffering.DisplayLabel
+        publish:
+          - result
+          - records
+          - parent_offering_name: "${cs_replace(cs_replace(cs_replace(cs_replace(entity_data_json[1:-1],'\"RequestsOffering.DisplayLabel\":',''),'\"',''),'}',''),'{','')}"
+          - message
+          - errorMessage
+          - errorSeverity
+          - errorProvder
+          - errorType
+          - entity_data_json
+        navigate:
+          - SUCCESS: SMAX_entityOperations_CloseRequest
+          - FAILURE: on_failure
+    - list_iterator_RequestTools_SMAXRecords_1:
+        do:
+          io.cloudslang.base.lists.list_iterator:
+            - list: '${data_json_MultipleSMAXnJiraRequests}'
+            - separator: '},'
+        publish:
+          - result_string
+          - return_result
+          - return_code
+          - SMAXRecord: "${result_string + '}'}"
+        navigate:
+          - HAS_MORE: get_SMAXRecord_fieldValues_1
+          - NO_MORE: prepareValues_for_jiraToolRequest_1
+          - FAILURE: on_failure
+    - get_SMAXRecord_fieldValues_1:
+        do:
+          io.cloudslang.base.utils.do_nothing:
+            - SMAXRecord: "${cs_replace(SMAXRecord,'}}','}')}"
+        publish:
+          - smax_request_tool: "${cs_replace(cs_replace(cs_replace(cs_json_query(SMAXRecord,'RequestTool_c'),']',''),'[',''),'\"','')}"
+          - JiraIssueId: "${cs_replace(cs_replace(cs_replace(cs_json_query(SMAXRecord,'JiraIssueId_c'),']',''),'[',''),'\"','')}"
+          - smax_request_id_tool: "${cs_replace(cs_replace(cs_replace(cs_json_query(SMAXRecord,'RequestId_c'),']',''),'[',''),'\"','')}"
+          - associate_onboarding_entity_id: "${cs_replace(cs_replace(cs_replace(cs_json_query(SMAXRecord,'Id'),']',''),'[',''),'\"','')}"
+        navigate:
+          - SUCCESS: Entity_ReturnRecords_tool_found_1
+          - FAILURE: on_failure
+    - Entity_ReturnRecords_tool_found_1:
+        do:
+          io.cloudslang.base.strings.string_equals:
+            - first_string: '${jira_request_tool}'
+            - second_string: '${smax_request_tool}'
+            - ignore_case: 'true'
+        publish: []
+        navigate:
+          - SUCCESS: Entity_ReturnRecords_tool_jiraIssueIdNotNUll
+          - FAILURE: list_iterator_RequestTools_SMAXRecords_1
+    - set_jira_remedy_issue_urls:
+        do:
+          io.cloudslang.base.utils.do_nothing:
+            - jira_request_tool_url: "${'<a href=\"{0}\">{1}</a>'.format(jiraIssueURL,jiraIssueId)}"
+        publish:
+          - jira_request_tool_url
+        navigate:
+          - SUCCESS: SMAX_entityOperations_UpdateAssociateOnBoarding_record
+          - FAILURE: on_failure
+    - getProjectTool:
+        do:
+          Cerner.Integrations.Remedy.Operations.getProjectTool:
+            - input_data: '${project_tool_mapping}'
+            - project_tool: "${jira_request_tool.split('|')[0]}"
+        publish:
+          - result
+          - project_tool: '${key}'
+          - value
+          - message
+          - errorType
+        navigate:
+          - SUCCESS: MultipleSMAXnJIra_Entity_ReturnRecords_Null
+          - FAILURE: on_failure
+    - Is_tool_Remedy_1:
+        do:
+          io.cloudslang.base.strings.string_equals:
+            - first_string: '${project_tool.lower()}'
+            - second_string: remedy
+            - ignore_case: 'true'
+            - jira_request_tool_url: "${'<a href=\"{0}\">{1}</a>'.format(jiraIssueURL,jiraIssueId)}"
+        publish:
+          - jira_request_tool_url
+        navigate:
+          - SUCCESS: set_jira_remedy_issue_urls_1
+          - FAILURE: set_resolution_comment
+    - set_jira_remedy_issue_urls_1:
+        do:
+          io.cloudslang.base.utils.do_nothing:
+            - jira_request_tool_url: "${'<a href=\"' + get_sp('Cerner.DigitalFactory.Remedy.remedyaskURL') + '{0}\">{0}</a>'.format(jiraIssueId)}"
+        publish:
+          - jira_request_tool_url
+        navigate:
+          - SUCCESS: set_resolution_comment
+          - FAILURE: on_failure
+    - on_failure:
+        - MainErrorHandler:
+            do:
+              Cerner.DigitalFactory.Error_Notification.Actions.MainErrorHandler:
+                - errorType: '${errorType}'
+                - errorMessage: '${errorMessage}'
+                - errorProvider: '${errorProvider}'
+                - errorSeverity: '${errorSeverity}'
+                - smaxRequestNumber: '${smaxRequestID}'
+                - smaxRequestSummary: '${summary}'
+                - smaxRequestorEmail: '${requestorEmail}'
+            publish:
+              - requestCreationStatus: FAILED
+  outputs:
+    - requestCreationStatus: '${requestCreationStatus}'
+  results:
+    - FAILURE
+    - SUCCESS
+extensions:
+  graph:
+    steps:
+      list_iterator_RequestTools_SMAXRecords_1:
+        x: 880
+        'y': 400
+      SMAX_entityOperations_UpdateAssociateOnBoarding_record:
+        x: 520
+        'y': 40
+      Is_tool_Remedy_1:
+        x: 800
+        'y': 720
+      If_jira_tool_is_null:
+        x: 400
+        'y': 600
+      Entity_ReturnRecords_tool_found:
+        x: 720
+        'y': 640
+      Create_IncidentIn_Remedy:
+        x: 1200
+        'y': 120
+      set_jira_remedy_issue_urls_1:
+        x: 680
+        'y': 800
+      get_SMAXRecord_fieldValues:
+        x: 600
+        'y': 520
+      get_millis_CurrentTime_1:
+        x: 1080
+        'y': 120
+      SMAX_getEntityDetails_GetParentOfferingName:
+        x: 160
+        'y': 280
+      set_resolution_comment:
+        x: 520
+        'y': 720
+      SMAX_entityOperations_CloseChildRequest:
+        x: 920
+        'y': 120
+      string_occurrence_counter_ifSMAXRequestCreated:
+        x: 720
+        'y': 320
+      set_resolution_comment_for_Onbaording:
+        x: 400
+        'y': 440
+      MultipleSMAXnJIra_Entity_ReturnRecords_Null:
+        x: 760
+        'y': 200
+      is_onboarding_access_mgmt:
+        x: 400
+        'y': 320
+      set_resolution_comment_1_1:
+        x: 240
+        'y': 600
+      extract_jiraToolkey_value:
+        x: 400
+        'y': 720
+      list_iterator_RequestTools_SMAXRecords:
+        x: 720
+        'y': 440
+      prepareValues_for_jiraToolRequest_1:
+        x: 1080
+        'y': 280
+      SMAX_getEntityDetails_from_Person_RequestorId:
+        x: 40
+        'y': 720
+      SMAX_entityOperations_CreateRequest:
+        x: 1200
+        'y': 720
+      Entity_ReturnRecords_tool_jiraIssueIdNotNUll:
+        x: 1080
+        'y': 720
+      SMAX_getEntityDetails_from_MultipleSMAXnJiraRequests:
+        x: 40
+        'y': 280
+      Is_tool_Remedy:
+        x: 1320
+        'y': 360
+      SMAX_entityOperations_CreateAssociateOnBoarding_record:
+        x: 1320
+        'y': 720
+      set_jira_remedy_issue_urls:
+        x: 680
+        'y': 40
+      Entity_ReturnRecords_tool_found_1:
+        x: 880
+        'y': 600
+      get_millis_CurrentTime:
+        x: 240
+        'y': 440
+      SMAX_getEntityDetails_from_GetOffeing_ID:
+        x: 40
+        'y': 480
+      Is_smax_request_already_created:
+        x: 1200
+        'y': 360
+      SMAX_entityOperations_CloseRequest:
+        x: 240
+        'y': 80
+        navigate:
+          0732f46d-8ca1-5c94-4acd-b41d857df45a:
+            targetId: 6b328459-5f42-7d0c-7363-a0a6f98782b7
+            port: SUCCESS
+      get_SMAXRecord_fieldValues_1:
+        x: 1000
+        'y': 480
+      set_resolution_comment_1:
+        x: 400
+        'y': 200
+      getProjectTool:
+        x: 600
+        'y': 200
+      list_iterator_RequestTools:
+        x: 520
+        'y': 320
+      Create_JiraRequest_Framework:
+        x: 1320
+        'y': 40
+      set_request_status:
+        x: 1520
+        'y': 40
+        navigate:
+          4a3873aa-c662-dfb1-929f-388739842687:
+            targetId: 86d04ff9-2009-c496-7fec-2f470deb7282
+            port: FAILURE
+          0ce58376-0ccb-daa8-a2d7-f8c4d0baf4a1:
+            targetId: 86d04ff9-2009-c496-7fec-2f470deb7282
+            port: SUCCESS
+      get_SMAXToken:
+        x: 40
+        'y': 80
+    results:
+      FAILURE:
+        86d04ff9-2009-c496-7fec-2f470deb7282:
+          x: 1520
+          'y': 360
+      SUCCESS:
+        6b328459-5f42-7d0c-7363-a0a6f98782b7:
+          x: 400
+          'y': 80
