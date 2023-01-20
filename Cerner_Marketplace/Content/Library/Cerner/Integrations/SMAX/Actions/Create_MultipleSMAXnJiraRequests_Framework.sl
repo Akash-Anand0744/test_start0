@@ -286,7 +286,9 @@ flow:
           - errorType
           - requestCreationStatus: SUCCESS
         navigate:
-          - SUCCESS: SUCCESS
+          - SUCCESS:
+              next_step: SUCCESS
+              ROI: '1'
           - FAILURE: on_failure
     - SMAX_getEntityDetails_from_GetOffeing_ID:
         do:
