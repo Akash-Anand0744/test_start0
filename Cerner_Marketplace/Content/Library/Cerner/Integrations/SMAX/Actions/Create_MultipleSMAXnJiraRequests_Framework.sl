@@ -87,7 +87,9 @@ flow:
           - jiraIssueId: "${cs_replace(cs_replace(cs_json_query(incidentCreationResultJSON,'key'),'[\"',''),'\"]','')}"
         navigate:
           - FAILURE: set_request_status
-          - SUCCESS: set_jira_remedy_issue_urls
+          - SUCCESS:
+              next_step: set_jira_remedy_issue_urls
+              ROI: '1'
     - SMAX_getEntityDetails_from_MultipleSMAXnJiraRequests:
         do:
           Cerner.DigitalFactory.Common.SMAX.Operation.SMAX_getEntityDetails:
