@@ -288,7 +288,7 @@ flow:
         navigate:
           - SUCCESS:
               next_step: SUCCESS
-              ROI: '4'
+              ROI: '5'
           - FAILURE: on_failure
     - SMAX_getEntityDetails_from_GetOffeing_ID:
         do:
